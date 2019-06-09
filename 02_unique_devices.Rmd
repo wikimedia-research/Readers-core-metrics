@@ -4,7 +4,7 @@ output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, tidy=TRUE, fig.path = "figures/README_figs/")
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, tidy=TRUE, fig.path = "figures/md_figs/")
 ```
 
 ```{r}
@@ -35,10 +35,9 @@ Calculate total monthly unique devices with yoy changes
 
 ```{r}
 unique_devices_summary <- unique_devices_monthly  %>%
-  filter(date < '2019-05') %>% #remove incomplete data from May
   select(-c(1,2)) %>%
   arrange(date) %>%
-  mutate(unique_devices = unique_devices/1E9,
+  mutate(unique_devices = unique_devices,
     YoY= unique_devices/lag(unique_devices,12) -1)
 
 knitr::kable(unique_devices_summary)
@@ -48,7 +47,7 @@ Plot unique devices
 ```{r}
 p <- ggplot(unique_devices_summary, aes(x=date, y = unique_devices)) +  
   geom_col(fill= 'blue') +
-  scale_y_continuous("unique devices per month (in billions)", labels = polloi::compress) +
+  scale_y_continuous("unique devices per month", labels = polloi::compress) +
   labs(title = "Monthly Unique Devices on All Wikipedias, 2018-2019") +
   ggthemes::theme_tufte(base_size = 12, base_family = "Gill Sans") +
   theme(axis.text.x=element_text(angle = 45, hjust = 1),

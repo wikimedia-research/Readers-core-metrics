@@ -29,40 +29,38 @@ unique_devices_monthly <- read.delim("data/unique_devices.tsv", sep = "\t",
 Calculate total monthly unique devices with yoy changes
 
 ``` r
-unique_devices_summary <- unique_devices_monthly  %>%
-  filter(date < '2019-05') %>% #remove incomplete data from May
-  select(-c(1,2)) %>%
-  arrange(date) %>%
-  mutate(unique_devices = unique_devices/1E9,
-    YoY= unique_devices/lag(unique_devices,12) -1)
+unique_devices_summary <- unique_devices_monthly %>% select(-c(1, 2)) %>% arrange(date) %>% 
+    mutate(unique_devices = unique_devices, YoY = unique_devices/lag(unique_devices, 
+        12) - 1)
 
 knitr::kable(unique_devices_summary)
 ```
 
 | date    |  unique\_devices|        YoY|
 |:--------|----------------:|----------:|
-| 2018-01 |         1.554912|         NA|
-| 2018-02 |         1.487087|         NA|
-| 2018-03 |         1.577671|         NA|
-| 2018-04 |         1.522051|         NA|
-| 2018-05 |         1.562608|         NA|
-| 2018-06 |         1.481623|         NA|
-| 2018-07 |         1.484414|         NA|
-| 2018-08 |         1.516850|         NA|
-| 2018-09 |         1.609517|         NA|
-| 2018-10 |         1.646305|         NA|
-| 2018-11 |         1.584756|         NA|
-| 2018-12 |         1.589473|         NA|
-| 2019-01 |         1.584392|  0.0189598|
-| 2019-02 |         1.531983|  0.0301906|
-| 2019-03 |         1.636521|  0.0373013|
-| 2019-04 |         1.581509|  0.0390646|
+| 2018-01 |       1554911548|         NA|
+| 2018-02 |       1487086660|         NA|
+| 2018-03 |       1577671296|         NA|
+| 2018-04 |       1522050732|         NA|
+| 2018-05 |       1562607664|         NA|
+| 2018-06 |       1481623542|         NA|
+| 2018-07 |       1484414539|         NA|
+| 2018-08 |       1516850100|         NA|
+| 2018-09 |       1609517085|         NA|
+| 2018-10 |       1646304870|         NA|
+| 2018-11 |       1584755682|         NA|
+| 2018-12 |       1589472863|         NA|
+| 2019-01 |       1584392317|  0.0189598|
+| 2019-02 |       1531982663|  0.0301906|
+| 2019-03 |       1636520495|  0.0373013|
+| 2019-04 |       1581509035|  0.0390646|
+| 2019-05 |       1594894475|  0.0206621|
 
 Plot unique devices
 
 ``` r
 p <- ggplot(unique_devices_summary, aes(x = date, y = unique_devices)) + geom_col(fill = "blue") + 
-    scale_y_continuous("unique devices per month (in billions)", labels = polloi::compress) + 
+    scale_y_continuous("unique devices per month", labels = polloi::compress) + 
     labs(title = "Monthly Unique Devices on All Wikipedias, 2018-2019") + ggthemes::theme_tufte(base_size = 12, 
     base_family = "Gill Sans") + theme(axis.text.x = element_text(angle = 45, 
     hjust = 1), plot.title = element_text(hjust = 0.5), panel.grid = element_line("gray70"))
@@ -72,4 +70,4 @@ ggsave(filename = "unqiue_devices_monthly.png", plot = p, path = "figures",
 p
 ```
 
-![](figures/README_figsunnamed-chunk-5-1.png)
+![](figures/md_figs/unnamed-chunk-5-1.png)

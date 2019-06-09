@@ -5,7 +5,7 @@ output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, tidy=TRUE, fig.path = "figures/README_figs/")
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, tidy=TRUE, fig.path = "figures/md_figs/")
 ```
 
 ```{r}
@@ -91,10 +91,9 @@ Calculate monthly and YoY pageviews for the global south region
 ```{r}
 gs_pageviews_monthly <- pageviews_gs_gn %>%
   mutate(date = floor_date(date, "month")) %>%
-  filter(date <= '2019-04-01',
-         region == 'Global South') %>% #filter out May due to incomplete data. Look only at Global South
+  filter(region == 'Global South') %>% #Look only at Global South
   group_by(date) %>%
-  summarise(monthly_views = sum(as.numeric(pageviews))/1E9) %>%
+  summarise(monthly_views = sum(as.numeric(pageviews))) %>%
   arrange(date) %>%
   mutate(yearOverYear= monthly_views/lag(monthly_views,12) -1)  %>%
   mutate(type = "pageviews")
@@ -139,10 +138,9 @@ Calculate monthly and YoY previews on desktop Wikipedia for the global south reg
 ```{r}
 gs_previews_monthly <- previews_gs_gn %>%
   mutate(date = floor_date(date, "month")) %>%
-  filter(date <= '2019-04-01',
-         region == 'Global South') %>% #filter out May due to incomplete data. Look only at Global South
+  filter(region == 'Global South') %>%  #Look only at Global South
   group_by(date) %>%
-  summarise(monthly_views = sum(as.numeric(previews_seen))/1E9) %>%
+  summarise(monthly_views = sum(as.numeric(previews_seen))) %>%
   arrange(date) %>%
   mutate(yearOverYear= monthly_views/lag(monthly_views,12) -1)  %>%
   mutate(type = "previews")
@@ -161,11 +159,11 @@ gs_interactions <- rbind(gs_pageviews_monthly, gs_previews_monthly)
 
 p <- ggplot(gs_interactions, aes(x=date, y = monthly_views, fill = forcats::fct_rev(type))) +  
   geom_col() +
-  scale_y_continuous("seen previews (shown for at least 1 sec)\nand pageviews (in billions)", breaks=c(seq(0, 20, by = 2.5))) +
+  scale_y_continuous("seen previews (shown for at least 1 sec)\nand pageviews (in billions)",  labels = polloi::compress) +
   scale_x_date("Date", labels = date_format("%Y-%m"), date_breaks = "3 months") +
   geom_vline(xintercept = as.numeric(as.Date("2018-04-01")),
              linetype = "dashed", color = "blue") +
-  geom_text(aes(x=as.Date('2018-04-01'), y=2.5, label="Page Previews Deployment Completed"), size=4, vjust = -1.2, angle = 90, color = "black") +
+  geom_text(aes(x=as.Date('2018-04-01'), y=2E9, label="Page Previews Deployment Completed"), size=4, vjust = -1.2, angle = 90, color = "black") +
   labs(title = "Global south pageviews and seen previews per calendar month") +
   ggthemes::theme_tufte(base_size = 14, base_family = "Gill Sans") +
   theme(axis.text.x=element_text(angle = 45, hjust = 1),
@@ -257,10 +255,9 @@ Calculate monthly pageviews and YoY changes on mobile-heavy wikis
 ```{r}
 mh_pageviews_monthly <- mobile_heavy_pageviews %>%
   mutate(date = floor_date(date, "month")) %>%
-  filter(date <= '2019-04-01') %>% #filter out months with incomplete date
   select(-c(1,2,3)) %>%
-  group_by(date) %>% #filter out May due to incomplete data. Look only at Global South
-  summarise(monthly_views = sum(as.numeric(mh_views))/1E6) %>%
+  group_by(date) %>% 
+  summarise(monthly_views = sum(as.numeric(mh_views))) %>%
   arrange(date) %>%
   mutate(yearOverYear= monthly_views/lag(monthly_views,12) -1)  %>%
   mutate(type = "pageviews")
@@ -298,10 +295,9 @@ Calculate monthly pageviews and YoY changes on mobile-heavy wikis
 ```{r}
  mh_previews_monthly <- mobile_heavy_previews %>%
     mutate(date = floor_date(date, "month")) %>%
-    filter(date <= '2019-04-01') %>% #filter out months with incomplete datea
     select(-c(1,2,3)) %>% 
     group_by(date) %>% 
-    summarise(monthly_views = sum(as.numeric(mh_views))/1E6) %>%
+    summarise(monthly_views = sum(as.numeric(mh_views))) %>%
     arrange(date) %>%
     mutate(yearOverYear= monthly_views/lag(monthly_views,12) -1)  %>%
     mutate(type = "previews")
@@ -323,11 +319,11 @@ Create chart of page interactions on mobile heavy wikis
 ```{r}
   p <- ggplot(mh_interactions, aes(x=date, y = monthly_views, fill = forcats::fct_rev(type))) +  
     geom_col() +
-    scale_y_continuous("seen previews (shown for at least 1 sec)\nand pageviews (in millions)") +
+    scale_y_continuous("seen previews (shown for at least 1 sec)\nand pageviews (in millions)",labels = polloi::compress) +
     scale_x_date("Date", labels = date_format("%Y-%m"), date_breaks = "3 months") +
     geom_vline(xintercept = as.numeric(as.Date("2018-04-01")),
                linetype = "dashed", color = "blue") +
-    geom_text(aes(x=as.Date('2018-04-01'), y=400, label="Page Previews Deployment Completed"), size=4, vjust = -1.2, angle = 90, color = "black") +
+    geom_text(aes(x=as.Date('2018-04-01'), y=350E6, label="Page Previews Deployment Completed"), size=4, vjust = -1.2, angle = 90, color = "black") +
     labs(title = "Mobile-heavy wiki pageviews and seen previews per calendar month") +
     ggthemes::theme_tufte(base_size = 14, base_family = "Gill Sans") +
     theme(axis.text.x=element_text(angle = 45, hjust = 1),
