@@ -62,12 +62,12 @@ tail(pageviews_all_monthly)
     ## # A tibble: 6 x 4
     ##   date       monthly_views yearOverYear type     
     ##   <date>             <dbl>        <dbl> <chr>    
-    ## 1 2018-12-01   15421572637      0.0308  pageviews
-    ## 2 2019-01-01   16854424374      0.00953 pageviews
-    ## 3 2019-02-01   14994451563      0.00688 pageviews
-    ## 4 2019-03-01   16323127594      0.00543 pageviews
-    ## 5 2019-04-01   15661204060      0.0137  pageviews
-    ## 6 2019-05-01   16328875602      0.0154  pageviews
+    ## 1 2019-01-01   16854424374      0.00953 pageviews
+    ## 2 2019-02-01   14994451563      0.00688 pageviews
+    ## 3 2019-03-01   16323127594      0.00543 pageviews
+    ## 4 2019-04-01   15661204060      0.0137  pageviews
+    ## 5 2019-05-01   16328875602      0.0154  pageviews
+    ## 6 2019-06-01   14840496959     -0.00905 pageviews
 
 Create time series chart of monthly pageviews
 
@@ -78,9 +78,8 @@ p <- ggplot(pageviews_all_monthly, aes(x = date, y = monthly_views)) + geom_line
     y = 1.6e+10, label = "Page previews deployment completed"), size = 3.5, 
     vjust = -1.2, angle = 90, color = "black") + scale_y_continuous("pageviews per month (in billions)", 
     labels = polloi::compress) + scale_x_date("Date", labels = date_format("%b %Y"), 
-    date_breaks = "2 months", limits = as.Date(c("2017-01-01", "2019-05-01"))) + 
-    labs(title = "Monthly Wikimedia pageviews") + ggthemes::theme_tufte(base_size = 12, 
-    base_family = "Gill Sans") + theme(axis.text.x = element_text(angle = 45, 
+    date_breaks = "2 months") + labs(title = "Monthly Wikimedia pageviews") + 
+    ggthemes::theme_tufte(base_size = 12, base_family = "Gill Sans") + theme(axis.text.x = element_text(angle = 45, 
     hjust = 1), plot.title = element_text(hjust = 0.5), panel.grid = element_line("gray70"))
 
 ggsave(filename = "Monthly pageviews monthly time series.png", plot = p, path = "figures", 
@@ -109,12 +108,12 @@ tail(pageviews_desktop)
     ## # A tibble: 6 x 3
     ##   date       monthly_views yearOveryear
     ##   <date>             <dbl>        <dbl>
-    ## 1 2018-12-01    6335150624      -0.0858
-    ## 2 2019-01-01    6985972077      -0.0941
-    ## 3 2019-02-01    6264340878      -0.0911
-    ## 4 2019-03-01    6740714008      -0.104 
-    ## 5 2019-04-01    6407008283      -0.0941
-    ## 6 2019-05-01    6630746673      -0.0831
+    ## 1 2019-01-01    6985972077      -0.0941
+    ## 2 2019-02-01    6264340878      -0.0911
+    ## 3 2019-03-01    6740714008      -0.104 
+    ## 4 2019-04-01    6407008283      -0.0941
+    ## 5 2019-05-01    6630746673      -0.0831
+    ## 6 2019-06-01    5790501161      -0.119
 
 Calculate mobile web pageview and year over year comparison
 
@@ -133,12 +132,12 @@ tail(pageviews_mobileweb)
     ## # A tibble: 6 x 3
     ##   date       monthly_views yearOveryear
     ##   <date>             <dbl>        <dbl>
-    ## 1 2018-12-01    8834866942       0.133 
-    ## 2 2019-01-01    9601003581       0.0997
-    ## 3 2019-02-01    8500267968       0.0927
-    ## 4 2019-03-01    9330934371       0.101 
-    ## 5 2019-04-01    9013609978       0.107 
-    ## 6 2019-05-01    9442723863       0.0978
+    ## 1 2019-01-01    9601003581       0.0997
+    ## 2 2019-02-01    8500267968       0.0927
+    ## 3 2019-03-01    9330934371       0.101 
+    ## 4 2019-04-01    9013609978       0.107 
+    ## 5 2019-05-01    9442723863       0.0978
+    ## 6 2019-06-01    8804953590       0.0782
 
 Quality check: Review all access methods together
 
@@ -154,7 +153,7 @@ p <- ggplot(pageviews_byaccess, aes(x=date, y = (views/1000000), color = access_
              linetype = "dashed", color = "blue") +
   geom_text(aes(x=as.Date('2018-12-25'), y=250, label="Christmas"), size=4, vjust = -1.2, angle = 90, color = "black") +
   scale_y_continuous("daily pageviews (in millions)") +
-  scale_x_date("Date", labels = date_format("%Y-%m-%d"), date_breaks = "2 months", limits= as.Date(c("2018-01-01", "2019-05-01"))) +
+  scale_x_date("Date", labels = date_format("%Y-%m-%d"), date_breaks = "2 months", limits= as.Date(c("2018-01-01", "2019-07-01"))) +
   labs(title = "Total daily Wikimedia pageviews by access method") +
   ggthemes::theme_tufte(base_size = 12, base_family = "Gill Sans") +
   theme(axis.text.x=element_text(angle = 45, hjust = 1),
@@ -167,7 +166,7 @@ p
 
 ![](figures/md_figs/unnamed-chunk-8-1.png)
 
-Create YOY Chart comparing the current fiscal year with the previous fical year.
+Create YOY Chart comparing the current fiscal year with the previous fical year. TODO: Adjust for FY 2019/2020 starting next month (July 2019)
 
 ``` r
 # Various adjustments to allow for fiscal year comparison.
@@ -186,7 +185,7 @@ p <- ggplot(pageviews_all_monthly_fy, aes(x = MonthN, y = monthly_views, group =
     label = "Page previews deployment completed (April 2018)"), size = 4, vjust = -1.2, 
     angle = 90, color = "black") + scale_y_continuous("pageviews per month (in billions)", 
     labels = polloi::compress) + scale_x_discrete(breaks = pageviews_all_monthly_fy$MonthN, 
-    labels = pageviews_all_monthly_fy$Month) + labs(title = "Wikimedia pageviews year-over-year comparison, July 2017-May 2019") + 
+    labels = pageviews_all_monthly_fy$Month) + labs(title = "Wikimedia pageviews year-over-year comparison, July 2017-June 2019") + 
     ggthemes::theme_tufte(base_size = 14, base_family = "Gill Sans") + theme(plot.title = element_text(hjust = 0.5), 
     legend.title = element_blank(), legend.position = "bottom", panel.grid = element_line("gray70"), 
     legend.key.width = unit(1.5, "cm")) + xlab("Month") + scale_linetype_manual(breaks = c("FY 2017/2018", 
@@ -205,7 +204,8 @@ Monthly Previews on Desktop Wikipedia
 ``` r
 # Get daily page previews seen on desktop Wikipedia since deployment in
 # April 2018
-query <- "
+q
+ry <- "
 SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) AS date,
   SUM(view_count) AS previews_seen
   FROM wmf.virtualpageview_hourly 
@@ -213,7 +213,8 @@ SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) 
   GROUP BY year, month, day
   ORDER BY year, month, day LIMIT 10000;
 "
-results <- collect(sql(query))
+results <- collect(sql(q
+ry))
 save(results, file = "Data/page_previews.tsv")
 ```
 
@@ -221,15 +222,10 @@ save(results, file = "Data/page_previews.tsv")
 previews <- read.delim("data/page_previews.tsv", sep = "\t")
 previews$date <- as.Date(previews$date, format = "%Y-%m-%d")
 
-previews_all_monthly <- previews %>%
-  select(-c(1,2,3)) %>%
-  mutate(date = floor_date(date, "month"))  %>%
-  filter(date <= '2019-05-01') %>% #Filter out incomplete months
-  group_by(date) %>%
-  summarise(monthly_views = sum(as.numeric(previews_seen))) %>%
-  arrange(date) %>%
-  mutate(yearOverYear= monthly_views/lag(monthly_views,12) -1) %>%
-  mutate(type = "previews")
+previews_all_monthly <- previews %>% select(-c(1, 2, 3)) %>% mutate(date = floor_date(date, 
+    "month")) %>% group_by(date) %>% summarise(monthly_views = sum(as.numeric(previews_seen))) %>% 
+    arrange(date) %>% mutate(yearOverYear = monthly_views/lag(monthly_views, 
+    12) - 1) %>% mutate(type = "previews")
 
 tail(previews_all_monthly)
 ```
@@ -237,12 +233,12 @@ tail(previews_all_monthly)
     ## # A tibble: 6 x 4
     ##   date       monthly_views yearOverYear type    
     ##   <date>             <dbl>        <dbl> <chr>   
-    ## 1 2018-12-01    1681405560      NA      previews
-    ## 2 2019-01-01    1959035892      NA      previews
-    ## 3 2019-02-01    1738551430      NA      previews
-    ## 4 2019-03-01    1867233307      NA      previews
-    ## 5 2019-04-01    1759067428       0.367  previews
-    ## 6 2019-05-01    1850432228      -0.0584 previews
+    ## 1 2019-01-01    1959035892      NA      previews
+    ## 2 2019-02-01    1738551430      NA      previews
+    ## 3 2019-03-01    1867233307      NA      previews
+    ## 4 2019-04-01    1759067428       0.367  previews
+    ## 5 2019-05-01    1850432228      -0.0584 previews
+    ## 6 2019-06-01    1609282924      -0.0936 previews
 
 Chart daily page previews times series
 
@@ -327,3 +323,4 @@ knitr::kable(interactions_total)
 | 2019-03-01 |   18190360901|            NA|
 | 2019-04-01 |   17420271488|     0.0408692|
 | 2019-05-01 |   18179307830|     0.0073303|
+| 2019-06-01 |   16449779883|    -0.0180081|

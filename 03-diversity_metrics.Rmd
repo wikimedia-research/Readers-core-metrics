@@ -193,22 +193,21 @@ knitr::kable(gs_interactions_total)
 # Mobile-Heavy Wikis Page Interactions
 
 ```{r eval=FALSE}
-# Get pageviews for identified mobile heavy countires for post May 2018 data. Other timespans need different corrections
+# Get pageviews for identified mobile heavy countries for post May 2018 data. Other timespans need different corrections
 # IE correction: https://phabricator.wikimedia.org/T157404#3194046, https://phabricator.wikimedia.org/T193578#4300284
 # Mobile heave wikis defined at: https://github.com/wikimedia-research/canonical-data/blob/master/mobile_heavy_wikis.csv
 
 query <- "SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) AS date,
- SUM(IF (FIND_IN_SET (project, 'ar.wikipedia, arz.wikipedia, az.wikipedia, bn.wikipedia, 
-	fa.wikipedia, gu.wikipedia, hi.wikipedia, id.wikipedia, kn.wikipedia,
-	ky.wikipedia, ml.wikipedia, mr.wikipedia, ms.wikipedia, pt.wiktionary,
-	sq.wikipedia, sw.wikipedia, ta.wikipedia, th.wikipedia, tl.wikipedia, 
-	zh.wikiquote') > 0, view_count, 0)) AS mh_views
+SUM(view_count) AS all,
+SUM(IF (FIND_IN_SET(project,
+'hi.wikipedia,bn.wikipedia,id.wikipedia,ar.wikipedia,mr.wikipedia,fa.wikipedia,sw.wikipedia,tl.wikipedia,zh.wikiquote,th.wikipedia,arz.wikipedia,ml.wikipedia,ta.wikipedia,kn.wikipedia,pt.wiktionary,az.wikipedia,gu.wikipedia,ky.wikipedia,sq.wikipedia,ms.wikipedia'
+) > 0, view_count, 0)) AS mh_views
 FROM wmf.pageview_hourly
 WHERE ((year = 2018 AND month >=5) OR (year = 2019))
-AND agent_type='user' 
+AND agent_type='user'
 AND NOT (country_code IN ('PK', 'IR', 'AF')
-AND user_agent_map['browser_family'] = 'IE' AND user_agent_map['browser_major'] = 7)
-GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000;
+AND user_agent_map['browser_family'] = 'IE') 
+GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000
 "
 results <- collect(sql(query))
 save(results, file="Data/mobile_heavy_pageviews.tsv")
@@ -221,18 +220,16 @@ save(results, file="Data/mobile_heavy_pageviews.tsv")
 # Get pageviews for identified mobile heavy countires for January 1-May 19, 2018 dates. Other timespans need different corrections   https://phabricator.wikimedia.org/T157404#3194046
 query <- "
 SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) AS date,
- SUM(IF (FIND_IN_SET (project, 'ar.wikipedia, arz.wikipedia, az.wikipedia, bn.wikipedia, 
-	fa.wikipedia, gu.wikipedia, hi.wikipedia, id.wikipedia, kn.wikipedia,
-	ky.wikipedia, ml.wikipedia, mr.wikipedia, ms.wikipedia, pt.wiktionary,
-	sq.wikipedia, sw.wikipedia, ta.wikipedia, th.wikipedia, tl.wikipedia, 
-	zh.wikiquote') > 0, view_count, 0)) AS mh_views
--- Filter for mobile heavy wikis https://github.com/wikimedia-research/canonical-data/blob/master/mobile_heavy_wikis.csv
+SUM(view_count) AS all,
+SUM(IF (FIND_IN_SET(project,
+'hi.wikipedia,bn.wikipedia,id.wikipedia,ar.wikipedia,mr.wikipedia,fa.wikipedia,sw.wikipedia,tl.wikipedia,zh.wikiquote,th.wikipedia,arz.wikipedia,ml.wikipedia,ta.wikipedia,kn.wikipedia,pt.wiktionary,az.wikipedia,gu.wikipedia,ky.wikipedia,sq.wikipedia,ms.wikipedia'
+) > 0, view_count, 0)) AS mh_views
 FROM wmf.pageview_hourly
-WHERE ((year = 2018 AND month >=5) OR (year = 2019))
-AND agent_type='user' 
-AND NOT (country_code IN ('PK', 'IR', 'AF') -- https://phabricator.wikimedia.org/T157404#3194046
-AND user_agent_map['browser_family'] = 'IE') -- https://phabricator.wikimedia.org/T193578#4300284
-GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000;
+ WHERE year = 2018 AND ((month < 5) OR (month = 5 AND day <=19))
+AND agent_type='user'
+  AND NOT (country_code IN ('PK', 'IR', 'AF')
+  AND user_agent_map['browser_family'] = 'IE' AND user_agent_map['browser_major'] = 7)
+GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000
 "
 results <- collect(sql(query))
 save(results, file="Data/mobile_heavy_pageviews_Jan-May2018.tsv")
