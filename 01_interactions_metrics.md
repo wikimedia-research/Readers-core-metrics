@@ -204,8 +204,7 @@ Monthly Previews on Desktop Wikipedia
 ``` r
 # Get daily page previews seen on desktop Wikipedia since deployment in
 # April 2018
-q
-ry <- "
+query <- "
 SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) AS date,
   SUM(view_count) AS previews_seen
   FROM wmf.virtualpageview_hourly 
@@ -213,8 +212,7 @@ SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) 
   GROUP BY year, month, day
   ORDER BY year, month, day LIMIT 10000;
 "
-results <- collect(sql(q
-ry))
+results <- collect(sql(query))
 save(results, file = "Data/page_previews.tsv")
 ```
 

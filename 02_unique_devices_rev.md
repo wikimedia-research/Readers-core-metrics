@@ -57,7 +57,7 @@ knitr::kable(unique_devices_summary)
 | 2019-05 |       1594894475|  0.0206621|
 | 2019-06 |       1506535565|  0.0168140|
 
-Plot unique devices
+Plot unique devices chart
 
 ``` r
 p <- ggplot(unique_devices_summary, aes(x = date, y = unique_devices)) + geom_col(fill = "blue") + 

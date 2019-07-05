@@ -44,6 +44,7 @@ knitr::kable(unique_devices_summary)
 ```
 
 Plot unique devices chart
+
 ```{r}
 p <- ggplot(unique_devices_summary, aes(x=date, y = unique_devices)) +  
   geom_col(fill= 'blue') +

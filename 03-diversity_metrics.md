@@ -101,12 +101,12 @@ tail(gs_pageviews_monthly)
     ## # A tibble: 6 x 4
     ##   date       monthly_views yearOverYear type     
     ##   <date>             <dbl>        <dbl> <chr>    
-    ## 1 2018-12-01    3669639793     NA       pageviews
-    ## 2 2019-01-01    3864438741      0.0707  pageviews
-    ## 3 2019-02-01    3578825856      0.0610  pageviews
-    ## 4 2019-03-01    3950836410      0.0657  pageviews
-    ## 5 2019-04-01    3721100969      0.0320  pageviews
-    ## 6 2019-05-01    3837559183     -0.00858 pageviews
+    ## 1 2019-01-01    3864438741      0.0707  pageviews
+    ## 2 2019-02-01    3578825856      0.0610  pageviews
+    ## 3 2019-03-01    3950836410      0.0657  pageviews
+    ## 4 2019-04-01    3721100969      0.0320  pageviews
+    ## 5 2019-05-01    3837559183     -0.00858 pageviews
+    ## 6 2019-06-01    3442174949     -0.0377  pageviews
 
 Global South seen previews
 --------------------------
@@ -157,12 +157,12 @@ tail(gs_previews_monthly)
     ## # A tibble: 6 x 4
     ##   date       monthly_views yearOverYear type    
     ##   <date>             <dbl>        <dbl> <chr>   
-    ## 1 2018-12-01     355521531       NA     previews
-    ## 2 2019-01-01     389463057       NA     previews
-    ## 3 2019-02-01     357437235       NA     previews
-    ## 4 2019-03-01     390454166       NA     previews
-    ## 5 2019-04-01     370881337        0.226 previews
-    ## 6 2019-05-01     389163895       -0.137 previews
+    ## 1 2019-01-01     389463057       NA     previews
+    ## 2 2019-02-01     357437235       NA     previews
+    ## 3 2019-03-01     390454166       NA     previews
+    ## 4 2019-04-01     370881337        0.226 previews
+    ## 5 2019-05-01     389163895       -0.137 previews
+    ## 6 2019-06-01     343196693       -0.165 previews
 
 Monthly Interactions in Global South (Pageviews + Seen Previews)
 ----------------------------------------------------------------
@@ -222,12 +222,13 @@ knitr::kable(gs_interactions_total)
 | 2019-03-01 |    4341290576|            NA|
 | 2019-04-01 |    4091982306|     0.0470239|
 | 2019-05-01 |    4226723078|    -0.0219466|
+| 2019-06-01 |    3785371642|    -0.0507908|
 
 Mobile-Heavy Wikis Page Interactions
 ====================================
 
 ``` r
-# Get pageviews for identified mobile heavy countires for post May 2018
+# Get pageviews for identified mobile heavy countries for post May 2018
 # data. Other timespans need different corrections IE correction:
 # https://phabricator.wikimedia.org/T157404#3194046,
 # https://phabricator.wikimedia.org/T193578#4300284 Mobile heave wikis
@@ -235,17 +236,16 @@ Mobile-Heavy Wikis Page Interactions
 # https://github.com/wikimedia-research/canonical-data/blob/master/mobile_heavy_wikis.csv
 
 query <- "SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) AS date,
- SUM(IF (FIND_IN_SET (project, 'ar.wikipedia, arz.wikipedia, az.wikipedia, bn.wikipedia, 
-\tfa.wikipedia, gu.wikipedia, hi.wikipedia, id.wikipedia, kn.wikipedia,
-\tky.wikipedia, ml.wikipedia, mr.wikipedia, ms.wikipedia, pt.wiktionary,
-\tsq.wikipedia, sw.wikipedia, ta.wikipedia, th.wikipedia, tl.wikipedia, 
-\tzh.wikiquote') > 0, view_count, 0)) AS mh_views
+SUM(view_count) AS all,
+SUM(IF (FIND_IN_SET(project,
+'hi.wikipedia,bn.wikipedia,id.wikipedia,ar.wikipedia,mr.wikipedia,fa.wikipedia,sw.wikipedia,tl.wikipedia,zh.wikiquote,th.wikipedia,arz.wikipedia,ml.wikipedia,ta.wikipedia,kn.wikipedia,pt.wiktionary,az.wikipedia,gu.wikipedia,ky.wikipedia,sq.wikipedia,ms.wikipedia'
+) > 0, view_count, 0)) AS mh_views
 FROM wmf.pageview_hourly
 WHERE ((year = 2018 AND month >=5) OR (year = 2019))
-AND agent_type='user' 
+AND agent_type='user'
 AND NOT (country_code IN ('PK', 'IR', 'AF')
-AND user_agent_map['browser_family'] = 'IE' AND user_agent_map['browser_major'] = 7)
-GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000;
+AND user_agent_map['browser_family'] = 'IE') 
+GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000
 "
 results <- collect(sql(query))
 save(results, file = "Data/mobile_heavy_pageviews.tsv")
@@ -259,18 +259,16 @@ save(results, file = "Data/mobile_heavy_pageviews.tsv")
 # https://phabricator.wikimedia.org/T157404#3194046
 query <- "
 SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) AS date,
- SUM(IF (FIND_IN_SET (project, 'ar.wikipedia, arz.wikipedia, az.wikipedia, bn.wikipedia, 
-\tfa.wikipedia, gu.wikipedia, hi.wikipedia, id.wikipedia, kn.wikipedia,
-\tky.wikipedia, ml.wikipedia, mr.wikipedia, ms.wikipedia, pt.wiktionary,
-\tsq.wikipedia, sw.wikipedia, ta.wikipedia, th.wikipedia, tl.wikipedia, 
-\tzh.wikiquote') > 0, view_count, 0)) AS mh_views
--- Filter for mobile heavy wikis https://github.com/wikimedia-research/canonical-data/blob/master/mobile_heavy_wikis.csv
+SUM(view_count) AS all,
+SUM(IF (FIND_IN_SET(project,
+'hi.wikipedia,bn.wikipedia,id.wikipedia,ar.wikipedia,mr.wikipedia,fa.wikipedia,sw.wikipedia,tl.wikipedia,zh.wikiquote,th.wikipedia,arz.wikipedia,ml.wikipedia,ta.wikipedia,kn.wikipedia,pt.wiktionary,az.wikipedia,gu.wikipedia,ky.wikipedia,sq.wikipedia,ms.wikipedia'
+) > 0, view_count, 0)) AS mh_views
 FROM wmf.pageview_hourly
-WHERE ((year = 2018 AND month >=5) OR (year = 2019))
-AND agent_type='user' 
-AND NOT (country_code IN ('PK', 'IR', 'AF') -- https://phabricator.wikimedia.org/T157404#3194046
-AND user_agent_map['browser_family'] = 'IE') -- https://phabricator.wikimedia.org/T193578#4300284
-GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000;
+ WHERE year = 2018 AND ((month < 5) OR (month = 5 AND day <=19))
+AND agent_type='user'
+  AND NOT (country_code IN ('PK', 'IR', 'AF')
+  AND user_agent_map['browser_family'] = 'IE' AND user_agent_map['browser_major'] = 7)
+GROUP BY year, month, day ORDER BY year, month, day LIMIT 1000
 "
 results <- collect(sql(query))
 save(results, file = "Data/mobile_heavy_pageviews_Jan-May2018.tsv")
@@ -304,12 +302,12 @@ tail(mh_pageviews_monthly)
     ## # A tibble: 6 x 4
     ##   date       monthly_views yearOverYear type     
     ##   <date>             <dbl>        <dbl> <chr>    
-    ## 1 2018-12-01     675804745       NA     pageviews
-    ## 2 2019-01-01     709357379        0.136 pageviews
-    ## 3 2019-02-01     650360340        0.145 pageviews
-    ## 4 2019-03-01     683682169        0.140 pageviews
-    ## 5 2019-04-01     649681496        0.153 pageviews
-    ## 6 2019-05-01     685429938        0.189 pageviews
+    ## 1 2019-01-01     709357379       0.136  pageviews
+    ## 2 2019-02-01     650360340       0.145  pageviews
+    ## 3 2019-03-01     683682169       0.140  pageviews
+    ## 4 2019-04-01     649681496       0.153  pageviews
+    ## 5 2019-05-01     685429938       0.189  pageviews
+    ## 6 2019-06-01     588140293       0.0748 pageviews
 
 Mobile-Heavy Previews
 ---------------------
@@ -352,12 +350,12 @@ tail(mh_previews_monthly)
     ## # A tibble: 6 x 4
     ##   date       monthly_views yearOverYear type    
     ##   <date>             <dbl>        <dbl> <chr>   
-    ## 1 2018-12-01      35591876      NA      previews
-    ## 2 2019-01-01      36596729      NA      previews
-    ## 3 2019-02-01      33318281      NA      previews
-    ## 4 2019-03-01      33671261      NA      previews
-    ## 5 2019-04-01      33236300      -0.0322 previews
-    ## 6 2019-05-01      33743376      -0.0488 previews
+    ## 1 2019-01-01      36596729      NA      previews
+    ## 2 2019-02-01      33318281      NA      previews
+    ## 3 2019-03-01      33671261      NA      previews
+    ## 4 2019-04-01      33236300      -0.0322 previews
+    ## 5 2019-05-01      33743376      -0.0488 previews
+    ## 6 2019-06-01      29193310      -0.0557 previews
 
 Interactions on Mobile-Heavy Wikis (Pageviews + Seen Previews)
 --------------------------------------------------------------
@@ -418,3 +416,4 @@ knitr::kable(mh_interactions_total)
 | 2019-03-01 |     717353430|            NA|
 | 2019-04-01 |     682917796|     0.1425128|
 | 2019-05-01 |     719173314|     0.1754561|
+| 2019-06-01 |     617333603|     0.0678114|
