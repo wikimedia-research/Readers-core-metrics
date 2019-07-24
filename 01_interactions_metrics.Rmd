@@ -28,8 +28,15 @@ library(reshape2)
 
 ## Monthly Pageviews
 
+Collect the total count of monthly pageviews with various corrections applied. List of corrections and timespans that they are applied to:
+
+* IEPKIRAF: since May 20, 2018
+* IE7PKIRAF: January 1-May 19, 2018
+* IE7PKIRAF & iOS mainpage: ...-Dec 31, 2017
+
 ```{r eval=FALSE}
 #Get overall pageviews in the month (all wikis, global) with IE correction applied for post May 20, 2018 dates. Other corrections applied for earlier dates. 
+# Run in terminal using sparkR.
 query <- "
 SELECT year, month, day, CONCAT(year,'-',LPAD(month,2,'0'),'-',LPAD(day,2,'0')) AS date,
 SUM(IF(access_method = 'mobile app', view_count, null)) AS Apps,
