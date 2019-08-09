@@ -7,8 +7,7 @@ SUM(IF (FIND_IN_SET(project,
 ) > 0, view_count, 0)) AS mh_views
   FROM wmf.virtualpageview_hourly 
   WHERE (year = 2018 AND month >=4) OR (year = 2019)
-  GROUP BY year, month, day
-  ORDER BY year, month, day LIMIT 10000;
+  GROUP BY year, month, day;
 
 
 

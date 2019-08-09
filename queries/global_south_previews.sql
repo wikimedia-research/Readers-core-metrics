@@ -14,4 +14,3 @@ FROM (
 JOIN canonical_data.countries AS countries
 ON bydatecountry.country_code = countries.iso_code
 GROUP BY date, countries.economic_region
-ORDER BY date, region LIMIT 10000
